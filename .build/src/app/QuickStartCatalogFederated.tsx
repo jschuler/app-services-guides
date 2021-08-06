@@ -1,13 +1,10 @@
 import React, { FunctionComponent } from "react";
 import {
-  PageSection,
-  PageSectionVariants,
   TextContent,
   Text,
   Divider,
   Gallery,
   GalleryItem,
-  Toolbar,
   ToolbarContent,
 } from "@patternfly/react-core";
 import {
@@ -20,24 +17,17 @@ import {
   QUICKSTART_SEARCH_FILTER_KEY,
   QuickStartCatalogFilterSearchWrapper,
   QuickStartCatalogFilterCountWrapper,
-  clearQuickStartFilters,
-  QuickStartsLoader,
-  LoadingBox,
   QuickStartCatalog,
-} from "@cloudmosaic/quickstarts";
-import { GuidesQuickStart } from './procedure-parser';
+  QuickStartCatalogSection,
+  QuickStartCatalogHeader,
+  QuickStartCatalogToolbar,
+} from "@patternfly/quickstarts";
+import { GuidesQuickStart } from "./procedure-parser";
+import "./Catalog.css";
 
-type MasQuickStartCatalogProps = {
-  quickStarts: GuidesQuickStart[];
-};
-
-const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
-  quickStarts,
-}) => {
-  const {
-    activeQuickStartID,
-    allQuickStartStates,
-  } = React.useContext<QuickStartContextValues>(QuickStartContext);
+const MasQuickStartCatalog: React.FC = () => {
+  const { activeQuickStartID, allQuickStartStates, allQuickStarts } =
+    React.useContext<QuickStartContextValues>(QuickStartContext);
 
   const initialQueryParams = new URLSearchParams(window.location.search);
   const initialSearchQuery =
@@ -56,22 +46,22 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
       return q1Order - q2Order;
     }
     return 0;
-  }
+  };
 
   const initialFilteredQuickStarts = filterQuickStarts(
-    quickStarts,
+    allQuickStarts,
     initialSearchQuery,
     [],
     allQuickStartStates
   ).sort(sortFnc);
 
   const [filteredQuickStarts, setFilteredQuickStarts] = React.useState<
-  GuidesQuickStart[]
+    GuidesQuickStart[]
   >(initialFilteredQuickStarts);
 
   const onSearchInputChange = (searchValue: string) => {
     const result = filterQuickStarts(
-      quickStarts,
+      allQuickStarts,
       searchValue,
       [],
       allQuickStartStates
@@ -81,13 +71,15 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
 
   const CatalogWithSections = (
     <>
-      <PageSection>
+      <QuickStartCatalogSection>
         <TextContent>
           <Text component="h2">Quick starts</Text>
-          <Text component="p">Step-by-step instructions and tasks</Text>
+          <Text component="p" className="mk-catalog-sub">
+            Step-by-step instructions and tasks
+          </Text>
         </TextContent>
-        <Gallery className="co-quick-start-catalog__gallery" hasGutter>
-          {quickStarts
+        <Gallery className="pfext-quick-start-catalog__gallery" hasGutter>
+          {allQuickStarts
             .filter(
               (quickStart) =>
                 !quickStart.spec.type ||
@@ -100,7 +92,10 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
               } = quickStart;
 
               return (
-                <GalleryItem key={id}>
+                <GalleryItem
+                  key={id}
+                  className="pfext-quick-start-catalog__gallery-item"
+                >
                   <QuickStartTile
                     quickStart={quickStart}
                     isActive={id === activeQuickStartID}
@@ -110,17 +105,19 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
               );
             })}
         </Gallery>
-      </PageSection>
-      <PageSection>
+      </QuickStartCatalogSection>
+      <QuickStartCatalogSection>
         <Divider />
-      </PageSection>
-      <PageSection>
+      </QuickStartCatalogSection>
+      <QuickStartCatalogSection>
         <TextContent>
           <Text component="h2">Documentation</Text>
-          <Text component="p">Technical information for using the service</Text>
+          <Text component="p" className="mk-catalog-sub">
+            Technical information for using the service
+          </Text>
         </TextContent>
-        <Gallery className="co-quick-start-catalog__gallery" hasGutter>
-          {quickStarts
+        <Gallery className="pfext-quick-start-catalog__gallery" hasGutter>
+          {allQuickStarts
             .filter(
               (quickStart) => quickStart.spec.type?.text === "Documentation"
             )
@@ -131,7 +128,10 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
               } = quickStart;
 
               return (
-                <GalleryItem key={id}>
+                <GalleryItem
+                  key={id}
+                  className="pfext-quick-start-catalog__gallery-item"
+                >
                   <QuickStartTile
                     quickStart={quickStart}
                     isActive={id === activeQuickStartID}
@@ -141,48 +141,33 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
               );
             })}
         </Gallery>
-      </PageSection>
+      </QuickStartCatalogSection>
     </>
   );
 
   const clearFilters = () => {
-    clearQuickStartFilters();
-    setFilteredQuickStarts(quickStarts.sort(sortFnc));
+    setFilteredQuickStarts(allQuickStarts.sort(sortFnc));
   };
 
   return (
     <>
-      <PageSection variant={PageSectionVariants.light}>
-        <TextContent>
-          <Text component="h1">Resources</Text>
-        </TextContent>
-      </PageSection>
+      <QuickStartCatalogHeader title="Resources" />
       <Divider component="div" />
-      <PageSection
-        padding={{
-          default: "noPadding",
-        }}
-      >
-        <Toolbar usePageInsets>
-          <ToolbarContent>
-            <QuickStartCatalogFilterSearchWrapper
-              onSearchInputChange={onSearchInputChange}
-            />
-            <QuickStartCatalogFilterCountWrapper
-              quickStartsCount={filteredQuickStarts.length}
-            />
-          </ToolbarContent>
-        </Toolbar>
-      </PageSection>
+      <QuickStartCatalogToolbar>
+        <ToolbarContent>
+          <QuickStartCatalogFilterSearchWrapper
+            onSearchInputChange={onSearchInputChange}
+          />
+          <QuickStartCatalogFilterCountWrapper
+            quickStartsCount={filteredQuickStarts.length}
+          />
+        </ToolbarContent>
+      </QuickStartCatalogToolbar>
       <Divider component="div" />
       {filteredQuickStarts.length === 0 ? (
-        <PageSection>
-          <QuickStartCatalogEmptyState clearFilters={clearFilters} />
-        </PageSection>
-      ) : filteredQuickStarts.length !== quickStarts.length ? (
-        <PageSection>
-          <QuickStartCatalog quickStarts={filteredQuickStarts} />
-        </PageSection>
+        <QuickStartCatalogEmptyState clearFilters={clearFilters} />
+      ) : filteredQuickStarts.length !== allQuickStarts.length ? (
+        <QuickStartCatalog quickStarts={filteredQuickStarts} />
       ) : (
         CatalogWithSections
       )}
@@ -191,15 +176,7 @@ const MasQuickStartCatalog: React.FC<MasQuickStartCatalogProps> = ({
 };
 
 const QuickStartCatalogFederated: FunctionComponent = () => (
-  <QuickStartsLoader>
-    {(quickStarts: GuidesQuickStart[], loaded: boolean) =>
-      loaded ? (
-        <MasQuickStartCatalog quickStarts={quickStarts} />
-      ) : (
-        <LoadingBox />
-      )
-    }
-  </QuickStartsLoader>
+  <MasQuickStartCatalog />
 );
 
 export default QuickStartCatalogFederated;

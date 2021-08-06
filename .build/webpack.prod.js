@@ -1,7 +1,10 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
+
+const isPatternflyStyles = (stylesheet) => stylesheet.includes('@patternfly/react-styles/css/') || stylesheet.includes('@patternfly/react-core/');
 
 module.exports = merge(common('production', { mode: "production" }, true), {
   mode: 'production',
@@ -20,5 +23,21 @@ module.exports = merge(common('production', { mode: "production" }, true), {
   },
   output: {
     filename: '[name].[contenthash:8].js'
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css|s[ac]ss$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+        include: (stylesheet => !isPatternflyStyles(stylesheet)),
+        sideEffects: true,
+      },
+      {
+        test: /\.css$/,
+        include: isPatternflyStyles,
+        use: ['null-loader'],
+        sideEffects: true,
+      },
+    ],
   },
 });

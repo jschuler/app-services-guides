@@ -32,8 +32,6 @@ const quickstartTransform = ({ env, useDir = true }) => ({
   noErrorOnMissing: true
 });
 
-const isPatternflyStyles = (stylesheet) => stylesheet.includes('@patternfly/react-styles/css/') || stylesheet.includes('@patternfly/react-core/');
-
 module.exports = (env, argv) => {
   const isProduction = argv && argv.mode === 'production';
   return {
@@ -53,18 +51,6 @@ module.exports = (env, argv) => {
               }
             }
           ]
-        },
-        {
-          test: /\.css|s[ac]ss$/i,
-          use: [MiniCssExtractPlugin.loader, 'css-loader'],
-          include: (stylesheet => !isPatternflyStyles(stylesheet)),
-          sideEffects: true,
-        },
-        {
-          test: /\.css$/,
-          include: isPatternflyStyles,
-          use: ['null-loader'],
-          sideEffects: true,
         },
         {
           test: fileRegEx,
