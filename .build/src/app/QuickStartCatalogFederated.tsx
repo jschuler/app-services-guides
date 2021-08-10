@@ -25,8 +25,9 @@ import {
 import { GuidesQuickStart } from "./procedure-parser";
 import "./Catalog.css";
 
-const MasQuickStartCatalog: React.FC = () => {
-  const { activeQuickStartID, allQuickStartStates, allQuickStarts } =
+const MasQuickStartCatalog: React.FC = ({ qs }) => {
+  debugger;
+  const { activeQuickStartID, allQuickStartStates, allQuickStarts = qs } =
     React.useContext<QuickStartContextValues>(QuickStartContext);
 
   const initialQueryParams = new URLSearchParams(window.location.search);
@@ -148,7 +149,7 @@ const MasQuickStartCatalog: React.FC = () => {
   const clearFilters = () => {
     setFilteredQuickStarts(allQuickStarts.sort(sortFnc));
   };
-
+  debugger;
   return (
     <>
       <QuickStartCatalogHeader title="Resources" />
@@ -175,8 +176,8 @@ const MasQuickStartCatalog: React.FC = () => {
   );
 };
 
-const QuickStartCatalogFederated: FunctionComponent = () => (
-  <MasQuickStartCatalog />
+const QuickStartCatalogFederated: FunctionComponent = ({ qs }) => (
+  <MasQuickStartCatalog qs={qs} />
 );
 
 export default QuickStartCatalogFederated;

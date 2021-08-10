@@ -1,4 +1,3 @@
-// import '@patternfly/react-core/dist/styles/base.css';
 import "@patternfly/quickstarts/dist/quickstarts.min.css";
 
 import React, { useState, useEffect, FunctionComponent } from "react";
@@ -79,12 +78,13 @@ const QuickStartDrawerFederated: FunctionComponent<QuickStartDrawerFederatedProp
       </QuickStartContextProvider>
     );
   } else {
-    return (
-      <>
-        {children}
-      </>
-    );
+    return children;
   }
+  // return (
+  //   <QuickStartContextProvider value={valuesForQuickstartContext}>
+  //       <QuickStartDrawer appendTo={appendTo} {...props}>{children}</QuickStartDrawer>
+  //     </QuickStartContextProvider>
+  // )
 };
 
 export default QuickStartDrawerFederated;
